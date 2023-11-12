@@ -1,2 +1,4 @@
-package com.machinecoding.ticketbooking.exception;public class InvalidStateException {
+package com.machinecoding.ticketbooking.exception;
+
+public class InvalidStateException extends RuntimeException {
 }

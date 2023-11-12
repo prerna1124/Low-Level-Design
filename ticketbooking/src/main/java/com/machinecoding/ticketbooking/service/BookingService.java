@@ -1,2 +1,5 @@
-package com.machinecoding.ticketbooking.service;public class BookingService {
+package com.machinecoding.ticketbooking.service;
+
+public class BookingService {
+
 }

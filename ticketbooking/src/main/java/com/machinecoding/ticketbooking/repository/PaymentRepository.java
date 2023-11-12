@@ -1,2 +1,4 @@
-package com.machinecoding.ticketbooking.repository;public class PaymentRepository {
+package com.machinecoding.ticketbooking.repository;
+
+public class PaymentRepository {
 }

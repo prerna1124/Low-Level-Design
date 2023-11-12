@@ -4,18 +4,36 @@ import com.machinecoding.ticketbooking.exception.SeatCurrentlyUnavailable;
 import com.machinecoding.ticketbooking.model.LockSeat;
 import com.machinecoding.ticketbooking.model.Seat;
 import com.machinecoding.ticketbooking.model.Show;
+import com.machinecoding.ticketbooking.model.User;
+import com.machinecoding.ticketbooking.service.ShowService;
 
 import java.util.*;
 
 public class InMemoryLockingService implements LockingMechanism {
 
+    private final ShowService showService;
+
     private final Map<Show, Map<Seat, LockSeat>> lockedSeats;
 
-    public InMemoryLockingService(Map<Show, Map<Seat, LockSeat>> lockedSeats) {
-        this.lockedSeats = lockedSeats;
+    public InMemoryLockingService(ShowService showService) {
+        this.showService = showService;
+        this.lockedSeats = new HashMap<>();
     }
 
-    public void lockSeats(Show show, List<Seat> seats, String user) {
+    public List<Seat> getAvailableSeats(Show show) {
+        List<Seat> unavailableSeat = getUnAvailableSeats(show);
+        List<Seat> allSeats = show.getScreen().getSeats();
+        List<Seat> availableSeats = new ArrayList<>(allSeats);
+        availableSeats.removeAll(unavailableSeat);
+        return availableSeats;
+    }
+
+    List<Seat> getUnAvailableSeats(Show show) {
+        List<Seat> unavailableSeat = getLockedSeats(show);
+        return unavailableSeat;
+    }
+    
+    synchronized public void lockSeats(Show show, List<Seat> seats, User user) {
         for(Seat seat : seats) {
             if(isSeatLocked(show, seat)) {
                 throw new SeatCurrentlyUnavailable();
@@ -27,7 +45,7 @@ public class InMemoryLockingService implements LockingMechanism {
         }
     }
 
-    public void lockSeat(Show show, Seat seat, String user) {
+    public void lockSeat(Show show, Seat seat, User user) {
         if(!lockedSeats.containsKey(show)) {
             lockedSeats.put(show, new HashMap<>());
         }
